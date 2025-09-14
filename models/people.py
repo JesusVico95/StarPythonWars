@@ -26,6 +26,12 @@ class People(ApiResource):
         return cls(name=data["name"],homeworld=planet,films=films,
                    starships=starships,vehicles=vehicles)
 
+    @staticmethod
+    def filter_by_character(character_list:List[People], name_character:str) -> People:
+
+        for character in character_list:
+            if character._name == name_character:
+                return character
 
     def from_api(self):
         from client.client import StarWarsCallApi
