@@ -24,17 +24,17 @@ class Planet(ApiResource):
     @classmethod
     def from_api_response(cls, planet:dict):
         from client.client import StarWarsCallApi
-        film_names = StarWarsCallApi.fetch_by_url(planet["films"],Film)
+        film_names = StarWarsCallApi.fetch_by_url(tuple(planet["films"]),Film)
 
         planet = Planet(planet["name"],planet["diameter"],film_names)
         return planet
 
-    @staticmethod
-    def filter_by_diameter(list_planets:List[Planet]):
+    @classmethod
+    def filter_by_diameter(self, list_planets:List[Planet]) -> List[Planet]:
         planets_without_diameter_unknown:List[Planet] = []
 
         try:
-            diameter = Planet.obtain_a_diameter()
+            diameter = self.obtain_a_diameter(self)
         except ErrorParameterNotValid as e:
             logging.error(f"{e}")
             return []
@@ -49,8 +49,7 @@ class Planet(ApiResource):
 
         return query
 
-    @staticmethod
-    def obtain_a_diameter():
+    def obtain_a_diameter(self):
             valid_number = True
             while valid_number:
                 try:
