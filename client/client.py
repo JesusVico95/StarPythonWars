@@ -1,11 +1,10 @@
 import requests
 import logging
 from typing import Type
+from functools import cache
 from models.errors import ErrorParameterNotValid, ErrorUrlInvalid
 from models.errors import ErrorNegativeNumber, ErrorToParse
 from typing import List
-from models.planet import Planet
-from models.film import Film
 from client.resource import ApiResource
 from client.url import Url
 
@@ -18,7 +17,7 @@ class StarWarsCallApi(ApiResource):
         "vehicles":"vehicles",
     }
 
-
+    @cache
     def create_connection(self, resource_name:str, number_page:int):
         validate_number = self.validate_page_number(number_page)
 
@@ -74,7 +73,8 @@ class StarWarsCallApi(ApiResource):
         return results
 
     @classmethod
-    def fetch_by_url(cls, urls:List[str], model_class: Type[ApiResource],
+    @cache
+    def fetch_by_url(cls, urls:tuple[str], model_class: Type[ApiResource],
                      timeout: float = 10.0) -> List[ApiResource]:
         list_instances=[]
         for url in urls:
@@ -101,18 +101,3 @@ class StarWarsCallApi(ApiResource):
     def from_api_response():
         pass
 
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-
-    sw = StarWarsCallApi()
-    sw_information = sw.get_all_information\
-        (StarWarsCallApi.api_endpoints["planets"])
-
-    get_info_about_planets = Planet.parse_planets(sw_information)
-
-    planets_diameters = Planet.filter_by_diameter(get_info_about_planets)
-
-    for diameter in planets_diameters:
-        print(diameter)
-        print("--")
