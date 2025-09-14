@@ -1,4 +1,5 @@
 from __future__ import annotations
+from functools import lru_cache
 from typing import List
 from models.film import Film
 from models.starship import Starship
@@ -14,7 +15,6 @@ class People(ApiResource):
         self._films = films
         self._starships = starships
         self._vehicles = vehicles
-
     @classmethod
     def from_api_response(cls, data:dict):
         from client.client import StarWarsCallApi
@@ -27,20 +27,20 @@ class People(ApiResource):
                    starships=starships,vehicles=vehicles)
 
     @staticmethod
-    def filter_by_character(character_list:List[People], name_character:str) -> People:
-
+    def filter_by_character(character_list:List[People], name_character:str)\
+    -> People:
         for character in character_list:
-            if character._name == name_character:
+            if character._name.lower() == name_character:
                 return character
 
-    def from_api(self):
+    def from_api(self) -> List[People]:
         from client.client import StarWarsCallApi
-        date = StarWarsCallApi()
-        data = date.get_all_information(date.api_endpoints["people"])
-        return [self.from_api_response(instance) for instance in data]
+        sw_api = StarWarsCallApi()
+        data_response = sw_api.get_all_information\
+        (sw_api.api_endpoints["people"])
+        return [self.from_api_response(instance) for instance in data_response]
 
-
-    def get_character_names(self):
+    def get_character_names(self) -> List[str]:
         all_characters_names=[]
         characters = self.from_api()
         for character in characters:
@@ -48,13 +48,13 @@ class People(ApiResource):
 
         return all_characters_names
 
-    def is_from_planet(self, name_planet:str):
+    def is_from_planet(self, name_planet:str) -> bool:
         return self._homeworld == name_planet
     @property
     def name(self):
         return self._name
 
-    def get_information(self, resources:List[str]):
+    def get_information(self, resources:List[str]) -> str:
         content = ""
         if resources:
             for resource in resources:
