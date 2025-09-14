@@ -1,10 +1,8 @@
 from __future__ import annotations
-from functools import lru_cache
 from typing import List
 from models.film import Film
 from models.starship import Starship
 from models.vehicle import Vehicle
-from models.planet import Planet
 from client.resource import ApiResource
 
 class People(ApiResource):
@@ -18,9 +16,9 @@ class People(ApiResource):
     @classmethod
     def from_api_response(cls, data:dict):
         from client.client import StarWarsCallApi
-        starships = StarWarsCallApi.fetch_by_url(data["starships"],Starship)
-        films = StarWarsCallApi.fetch_by_url(data["films"],Film)
-        vehicles = StarWarsCallApi.fetch_by_url(data["vehicles"],Vehicle)
+        starships = StarWarsCallApi.fetch_by_url(tuple(data["starships"]),Starship)
+        films = StarWarsCallApi.fetch_by_url(tuple(data["films"]),Film)
+        vehicles = StarWarsCallApi.fetch_by_url(tuple(data["vehicles"]),Vehicle)
         planet = StarWarsCallApi.fetch_unique_planet(data["homeworld"])
 
         return cls(name=data["name"],homeworld=planet,films=films,
