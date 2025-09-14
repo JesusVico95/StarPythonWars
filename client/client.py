@@ -98,6 +98,23 @@ class StarWarsCallApi(ApiResource):
 
         return list_instances
 
+    @staticmethod
+    @cache
+    def fetch_unique_planet(url:str):
+        instance = ""
+        try:
+            request = requests.get(url)
+            request.raise_for_status()
+            response = request.json()
+            instance = response["name"]
+        except requests.RequestException as err:
+            logging.error(f"HTTP Error: {err}")
+        except ValueError as err:
+            logging.error(f"Invalid JSON: {err}")
+        except ErrorToParse as err:
+            logging.error(f"Fail parse: {err}")
+        return instance
+
     def from_api_response():
         pass
 
