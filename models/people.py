@@ -42,6 +42,8 @@ class People(ApiResource):
 
         return all_characters_names
 
+    def is_from_planet(self, name_planet:str):
+        return self._homeworld == name_planet
     @property
     def name(self):
         return self._name
