@@ -67,9 +67,9 @@ class People(ApiResource):
 
         return all_characters_names
 
-    def is_from_planet(cls, name_planet:str) -> bool:
-        name_planet = cls.validate_input(name_planet)
-        if cls._homeworld.lower() == name_planet.lower():
+    def is_from_planet(self, name_planet:str) -> bool:
+        name_planet = self.validate_input(name_planet)
+        if self._homeworld.lower() == name_planet.lower():
             return True
 
     @property
