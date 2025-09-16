@@ -1,14 +1,14 @@
-class ErrorUrlInvalid(BaseException):
+class ErrorUrlInvalid(Exception):
     pass
 
-class ErrorParameterNotValid(BaseException):
+class ErrorParameterNotValid(Exception):
     pass
 
-class ErrorNegativeNumber(BaseException):
+class ErrorNegativeNumber(Exception):
     pass
 
-class ErrorExceptTest(BaseException):
+class ErrorExceptTest(Exception):
     pass
 
-class ErrorToParse(BaseException):
+class ErrorToParse(Exception):
     pass
