@@ -13,9 +13,10 @@ class TestStarWarsClientApi(unittest.TestCase):
     def test_is_a_invalid_number(self):
         number_page = 0
         sw_api = StarWarsCallApi()
-        with self.assertRaises(ErrorNegativeNumber)\
-        as execute:
+        with self.assertRaises(ErrorNegativeNumber) as exc:
             sw_api.validate_page_number(number_page)
+            self.assertIn(f"Parameter 'number_page' is invalid"
+            f"Expected int, got {type(number_page).__name__}",str(exc.exception))
 
     def test_is_a_take_diferents_values(self):
         sw_api = StarWarsCallApi()
@@ -49,6 +50,12 @@ class TestStarWarsClientApi(unittest.TestCase):
             self.assertEqual(result["count"], 61)
             self.assertEqual(len(result["results"]), 2)
 
+    def test_error_parameter_to_create_connection(self):
+        create = StarWarsCallApi()
+        with self.assertRaises(ErrorParameterNotValid) as exc:
+            create.create_connection("vehiccles",1)
+            self.assertIn("The parameter 'resource_name' not contains in"
+                          "apiEndpoints",str(exc.exception))
 
 
 
