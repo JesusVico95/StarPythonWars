@@ -1,4 +1,5 @@
 import unittest
+from typing import List
 from unittest.mock import patch
 from client.client import StarWarsCallApi
 from models.errors import ErrorParameterNotValid, ErrorUrlInvalid, \
@@ -57,5 +58,22 @@ class TestStarWarsClientApi(unittest.TestCase):
             self.assertIn("The parameter 'resource_name' not contains in"
                           "apiEndpoints",str(exc.exception))
 
+    def test_get_information_multiple_pages(self):
+        create = StarWarsCallApi()
+        with patch("client.client.requests.get") as mock_get:
+            mock_get.return_value.status_code = 200
+            mock_get.return_value.json.return_value = [
+                {"name": "Luke"},
+                {"name": "Leia"}
+            ]
+
+            result = create.create_connection("people",1)
+            mock_get.assert_called_with\
+            ("https://swapi.py4e.com/api/people/?page=1")
+
+            self.assertIsInstance(result,list)
+            self.assertGreater(len(result),0)
+            self.assertIn({"name": "Luke"}, result)
+            self.assertIn({"name": "Leia"}, result)
 
 
