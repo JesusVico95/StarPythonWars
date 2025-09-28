@@ -4,6 +4,9 @@ from unittest.mock import patch, Mock, call
 from client.client import StarWarsCallApi
 from models.errors import ErrorParameterNotValid, ErrorUrlInvalid, \
     ErrorNegativeNumber
+import requests
+import logging
+from models.people import People
 class TestStarWarsClientApi(unittest.TestCase):
     def test_is_a_valid_integer(self):
         number_page = 1
@@ -73,7 +76,9 @@ class TestStarWarsClientApi(unittest.TestCase):
             "next":None
         }
         create = StarWarsCallApi()
-        with patch("client.client.requests.get",side_effect=[first_response,second_response]) as mock_get:
+        with patch("client.client.requests.get",side_effect=[first_response,
+            second_response]) as mock_get:
+
             mock_get.return_value.status_code = 200
             result = create.get_all_information("starships")
             mock_get.assert_has_calls([
@@ -84,4 +89,22 @@ class TestStarWarsClientApi(unittest.TestCase):
             self.assertEqual(result[1]["name"],"Slave 1")
             self.assertEqual(mock_get.call_count,2)
 
+    def test_timeout_fetch_by_url(self):
+        urls = tuple(["https://swapi.py4e.com/api/people/?page=1",
+                      "https://swapi.py4e.com/api/people/?page=2"])
+        create = StarWarsCallApi()
+        with patch("client.client.requests.get") as mock_get:
+            mock_get.side_effect = requests.Timeout()
+            with self.assertLogs(level="ERROR") as logs:
+
+                result = create.fetch_by_url(urls,People,timeout= 0.001)
+
+                found_error = any("HTTP Error" in message for message
+                                  in logs.output)
+
+                self.assertTrue(found_error)
+                self.assertEqual(result,[None,None])
+                self.assertEqual(mock_get.call_count,2)
+
+    
 
