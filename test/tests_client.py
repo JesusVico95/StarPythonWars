@@ -1,6 +1,6 @@
 import unittest
 from typing import List
-from unittest.mock import patch
+from unittest.mock import patch, Mock, call
 from client.client import StarWarsCallApi
 from models.errors import ErrorParameterNotValid, ErrorUrlInvalid, \
     ErrorNegativeNumber
@@ -58,22 +58,30 @@ class TestStarWarsClientApi(unittest.TestCase):
             self.assertIn("The parameter 'resource_name' not contains in"
                           "apiEndpoints",str(exc.exception))
 
-    def test_get_information_multiple_pages(self):
+    def test_get_all_information_use_multiple_pages(self):
+        first_response = Mock()
+        first_response.status_code = 200
+        first_response.json.return_value = {
+            "results": [{"name": "CR90 corvette"}],
+            "next":"https://swapi.py4e.com/api/starships/?page=2"
+        }
+
+        second_response = Mock()
+        second_response.status_code = 200
+        second_response.json.return_value = {
+            "results": [{"name": "Slave 1"}],
+            "next":None
+        }
         create = StarWarsCallApi()
-        with patch("client.client.requests.get") as mock_get:
+        with patch("client.client.requests.get",side_effect=[first_response,second_response]) as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.json.return_value = [
-                {"name": "Luke"},
-                {"name": "Leia"}
-            ]
-
-            result = create.create_connection("people",1)
-            mock_get.assert_called_with\
-            ("https://swapi.py4e.com/api/people/?page=1")
-
-            self.assertIsInstance(result,list)
-            self.assertGreater(len(result),0)
-            self.assertIn({"name": "Luke"}, result)
-            self.assertIn({"name": "Leia"}, result)
+            result = create.get_all_information("starships")
+            mock_get.assert_has_calls([
+                call("https://swapi.py4e.com/api/starships/?page=1"),
+                call("https://swapi.py4e.com/api/starships/?page=2")
+            ])
+            self.assertEqual(result[0]["name"],"CR90 corvette")
+            self.assertEqual(result[1]["name"],"Slave 1")
+            self.assertEqual(mock_get.call_count,2)
 
 
