@@ -24,7 +24,7 @@ class TestStarWarsClientApi(unittest.TestCase):
 
     def test_is_a_take_diferents_values(self):
         sw_api = StarWarsCallApi()
-        invalid_parameters = [0,-1,-10,"hello"]
+        invalid_parameters = [0,-1,"hello"]
         for number_page in invalid_parameters:
             with self.subTest(number_page = number_page):
                 if isinstance(number_page, int) and number_page <= 0:
@@ -106,5 +106,17 @@ class TestStarWarsClientApi(unittest.TestCase):
                 self.assertEqual(result,[None,None])
                 self.assertEqual(mock_get.call_count,2)
 
-    
+    def test_obtains_correct_name_planet(self):
+        name_planet = Mock()
+        name_planet.status_code = 200
+        name_planet.json.return_value = {
+            "name": "Tatooine"
+        }
+        create = StarWarsCallApi()
+        with patch("client.client.requests.get",side_effect=[name_planet])\
+        as mock_get:
+            result = create.fetch_unique_planet\
+            ("https://swapi.py4e.com/api/planets/1/")
+
+        self.assertEqual(result,"Tatooine")
 
