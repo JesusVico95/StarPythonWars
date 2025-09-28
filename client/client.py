@@ -78,19 +78,16 @@ class StarWarsCallApi(ApiResource):
                      timeout: float = 10.0) -> List[ApiResource]:
         list_instances=[]
         for url in urls:
+            instance = None
             try:
                 request = requests.get(url,timeout=timeout)
                 request.raise_for_status()
+                response = request.json()
+                instance = model_class.from_api_response(response)
             except requests.RequestException as err:
                 logging.error(f"HTTP Error: {err}")
-
-            try:
-                response = request.json()
             except ValueError as err:
                 logging.error(f"Invalid JSON: {err}")
-
-            try:
-                instance = model_class.from_api_response(response)
             except ErrorToParse as err:
                 logging.error(f"Fail parse: {err}")
 
