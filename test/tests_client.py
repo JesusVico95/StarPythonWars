@@ -7,6 +7,7 @@ from models.errors import ErrorParameterNotValid, ErrorUrlInvalid, \
 import requests
 import logging
 from models.people import People
+from models.starship import Starship
 class TestStarWarsClientApi(unittest.TestCase):
     def test_is_a_valid_integer(self):
         number_page = 1
@@ -101,6 +102,22 @@ class TestStarWarsClientApi(unittest.TestCase):
 
                 found_error = any("HTTP Error" in message for message
                                   in logs.output)
+
+                self.assertTrue(found_error)
+                self.assertEqual(result,[None,None])
+                self.assertEqual(mock_get.call_count,2)
+
+    def test_invalid_json_response(self):
+        starships_urls = tuple(["https://swapi.py4e.com/api/starships/?page=1",
+                     "https://swapi.py4e.com/api/starships/?page=2"])
+        create = StarWarsCallApi()
+        with patch("client.client.requests.get") as mock_get:
+            mock_get.side_effect = ValueError()
+            with self.assertLogs(level="ERROR") as logs:
+                result = create.fetch_by_url(starships_urls,Starship)
+
+                found_error = any("Invalid JSON:" in message
+                                  for message in logs.output)
 
                 self.assertTrue(found_error)
                 self.assertEqual(result,[None,None])
