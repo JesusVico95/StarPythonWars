@@ -35,7 +35,7 @@ StarPythonWars/
 ├── test/                  # Unit tests
 │   ├── __init__.py
 │   └── tests_client.py   # Tests for API client
-├── user.py # Interactive CLI application
+├── user.py               # Interactive CLI application
 └── README.md                   
 ```
 ## 🛠️ Install
@@ -45,5 +45,6 @@ git clone https://github.com/usuario/StarPythonWars.git
 pip install -r requirements.txt
 ##
 The application can be tested by using the user.py class.
+
 
 
