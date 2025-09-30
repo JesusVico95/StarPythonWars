@@ -20,8 +20,8 @@ StarPythonWars/
 │   ├── __init__.py
 │   ├── client.py          # Main API client class
 │   ├── resource.py        # Abstract base class for API resources
-│   ├── url.py            # API endpoint configuration
-│   └── user.py           # Interactive CLI application
+│   └──  url.py            # API endpoint configuration
+│             
 │
 ├── models/                # Data models
 │   ├── __init__.py
@@ -35,7 +35,7 @@ StarPythonWars/
 ├── test/                  # Unit tests
 │   ├── __init__.py
 │   └── tests_client.py   # Tests for API client
-│
+├── user.py # Interactive CLI application
 └── README.md                   
 ```
 ## 🛠️ Install
@@ -45,4 +45,5 @@ git clone https://github.com/usuario/StarPythonWars.git
 pip install -r requirements.txt
 ##
 The application can be tested by using the user.py class.
+
 
