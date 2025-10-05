@@ -71,6 +71,7 @@ class People(ApiResource):
         name_planet = self.validate_input(name_planet)
         if self._homeworld.lower() == name_planet.lower():
             return True
+        return False
 
     @property
     def name(self):
